@@ -9,7 +9,7 @@ function initializeMobileTransfers() {
     initializeTransfersChart();
     
     // Load transfers data from API
-    loadMobileTransfersData();
+    fetchMobileTransfers();
     
     // Initialize filters
     initializeTransfersFilters();
@@ -198,18 +198,38 @@ function capitalizeFirstLetter(string) {
 // Mobile Transfers page specific functions
 function initializeMobileTransfers() {
     console.log('Initializing Mobile Transfers page...');
-    loadMobileTransfersData();
+    fetchMobileTransfers();
 }
 
-async function loadMobileTransfersData() {
+async function fetchMobileTransfers() {
     try {
-        const response = await fetch('http://localhost:3000/api/mobile-transfers');
-        const json = await response.json();
+        const response = await fetch('https://mo-mo-transaction-data-analysis.vercel.app/api/mobile-transfers');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const jsonData = await response.json();
+        const transfers = jsonData.data;
+
+        // Store meta data globally if available
+        if (jsonData.meta) {
+            window.transfersMetaData = jsonData.meta;
+        }
 
         const tableBody = document.getElementById('transfersTableBody');
+        if (!tableBody) {
+            console.error('Table body element not found');
+            return;
+        }
+        
         tableBody.innerHTML = ''; // clear existing rows
 
-        json.data.forEach(item => {
+        if (!transfers || !Array.isArray(transfers) || transfers.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5">No transfer data available.</td></tr>';
+            return;
+        }
+
+        transfers.forEach((item) => {
             const row = document.createElement('tr');
             
             // Define status based on transaction status
@@ -233,12 +253,16 @@ async function loadMobileTransfersData() {
         addStatusStyles();
         
         // Update statistics
-        updateMobileTransfersStatistics(json.data);
+        if (transfers && transfers.length > 0) {
+            updateMobileTransfersStatistics(transfers);
+        }
 
     } catch (error) {
-        console.error('Failed to load transfers:', error);
+        console.error('Error fetching mobile transfers:', error);
         const tableBody = document.getElementById('transfersTableBody');
-        tableBody.innerHTML = '<tr><td colspan="5">Failed to load data. Please try again later.</td></tr>';
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="5">Failed to load data. Please try again later.</td></tr>';
+        }
     }
 }
 
@@ -256,7 +280,12 @@ function updateMobileTransfersStatistics(data) {
     const transfersAmountEl = document.getElementById('transfersAmount');
     const avgTransferEl = document.getElementById('avgTransfer');
     
-    if (totalTransfersEl) totalTransfersEl.textContent = totalTransfers;
+    if (totalTransfersEl) {
+        // Check for meta information in the parent object (json response)
+        const metaTotal = window.transfersMetaData?.total || totalTransfers;
+        totalTransfersEl.textContent = metaTotal.toLocaleString();
+    }
+    
     if (transfersAmountEl) transfersAmountEl.textContent = Number(totalAmount).toLocaleString();
     if (avgTransferEl) avgTransferEl.textContent = Number(Math.round(avgTransfer)).toLocaleString();
 }
