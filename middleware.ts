@@ -6,7 +6,12 @@ export function middleware(request: NextRequest) {
   // Get the origin from the request
   const origin = request.headers.get('origin') || '*'
   
-  // Only apply to /api routes
+  // If it's the root path, serve the static index.html
+  if (request.nextUrl.pathname === '/') {
+    return NextResponse.rewrite(new URL('/index.html', request.url))
+  }
+  
+  // Only apply CORS headers to /api routes
   if (request.nextUrl.pathname.startsWith('/api')) {
     // Response object
     const response = NextResponse.next()

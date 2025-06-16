@@ -1,7 +1,10 @@
 {
   "version": 2,
+  "public": true,
+  "cleanUrls": true,
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "^/$", "dest": "/index.html" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
