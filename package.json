@@ -5,7 +5,8 @@
     "prebuild": "node copy-index.js",
     "build": "echo 'Static site build complete'",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "node copy-index.js"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",
