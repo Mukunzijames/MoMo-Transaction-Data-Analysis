@@ -2,6 +2,7 @@
   "name": "my-app",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node copy-index.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

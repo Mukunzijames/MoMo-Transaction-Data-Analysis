@@ -9,6 +9,20 @@ const nextConfig = {
       },
     ];
   },
+  // Disable the Next.js default 404 page
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'x-custom-header',
+            value: 'my custom header value',
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig
