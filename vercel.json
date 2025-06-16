@@ -1,8 +1,8 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "framework": "nextjs",
+  "outputDirectory": "public",
+  "framework": false,
   "routes": [
     { "src": "^/$", "dest": "/index.html" },
     { "src": "/api/(.*)", "dest": "/api/$1" },

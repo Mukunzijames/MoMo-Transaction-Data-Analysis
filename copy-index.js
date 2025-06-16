@@ -20,4 +20,43 @@ try {
   }
 } catch (error) {
   console.error('Error copying index.html:', error);
+}
+
+// Function to copy directory recursively
+function copyDir(src, dest) {
+  // Create destination directory if it doesn't exist
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+  
+  // Read all files/folders from source directory
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    
+    if (entry.isDirectory()) {
+      // Recursively copy subdirectories
+      copyDir(srcPath, destPath);
+    } else {
+      // Copy files
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+// Copy frontend directory to public/frontend
+try {
+  const frontendSrc = path.join(__dirname, 'frontend');
+  const frontendDest = path.join(__dirname, 'public', 'frontend');
+  
+  if (fs.existsSync(frontendSrc)) {
+    copyDir(frontendSrc, frontendDest);
+    console.log('Successfully copied frontend directory to public/frontend');
+  } else {
+    console.error('Source frontend directory not found');
+  }
+} catch (error) {
+  console.error('Error copying frontend directory:', error);
 } 
