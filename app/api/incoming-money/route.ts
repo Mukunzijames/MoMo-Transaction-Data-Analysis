@@ -5,6 +5,18 @@ import db from '@/app/db/index'
 
 export const runtime = 'edge'
 
+// Define CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*', // Allow all origins
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function GET(request: Request) {
   try {
     // Get query params from URL
@@ -73,6 +85,7 @@ export async function GET(request: Request) {
       .limit(limit)
       .offset(offset)
 
+    // Return response with CORS headers
     return NextResponse.json({
       data: transactions,
       meta: {
@@ -80,13 +93,13 @@ export async function GET(request: Request) {
         page,
         limit
       }
-    })
+    }, { headers: corsHeaders })
 
   } catch (error) {
     console.error('Error fetching transactions:', error)
     return NextResponse.json(
       { error: 'Failed to fetch transactions' },
-      { status: 500 }
+      { status: 500, headers: corsHeaders }
     )
   }
 }

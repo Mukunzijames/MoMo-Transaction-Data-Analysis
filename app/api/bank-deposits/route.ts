@@ -3,6 +3,20 @@ import { sql, and, count, ilike } from 'drizzle-orm'
 import db from '@/app/db/index'
 import { bankTransactions } from '@/app/db/schema'
 
+export const runtime = 'edge'
+
+// Define CORS headers
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*', // Allow all origins
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+// Handle OPTIONS request for CORS preflight
+export async function OPTIONS() {
+  return NextResponse.json({}, { headers: corsHeaders })
+}
+
 export async function GET(request: Request) {
   try {
     // Get query params from URL
